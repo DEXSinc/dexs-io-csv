@@ -7,7 +7,7 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>https://www.dexs.ca/licence</licenseUrl>
-    <projectUrl>https://github.com/DEXS/dexs-io-csv/</projectUrl>
+    <projectUrl>https://github.com/DEXSinc/dexs-io-csv/</projectUrl>
     <iconUrl>https://www.dexs.ca/project.ico</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
