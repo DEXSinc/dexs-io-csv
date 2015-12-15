@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://www.dexs.ca/licence</licenseUrl>
+    <projectUrl>https://github.com/DEXS/dexs-io-csv/</projectUrl>
+    <iconUrl>https://www.dexs.ca/project.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>none</releaseNotes>
+    <copyright>Copyright © DEXS Inc. 2015</copyright>
+    <tags>CSV DEXS IO</tags>
+  </metadata>
+</package>
