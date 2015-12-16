@@ -1,7 +1,29 @@
 # dexs-io-csv
 DEXS.IO.CSV Lightweight .Net CSV Serializer
 
+<style>
+.nuget-badge code {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background-color: #202020;
+    border: 4px solid silver;
+    border-radius: 5px;
+    box-shadow: 2px 2px 3px #6e6e6e;
+    color: #e2e2e2;
+    display: block;
+    font: 1.5em 'andale mono','lucida console',monospace;
+    line-height: 1.5em;
+    overflow: auto;
+    padding: 15px;
+}
+</style>
+
 Example use:
+<div class="nuget-badge">
+    <p>
+        <code>PM&gt; Install-Package DEXS.IO.CSV</code>
+    </p>
+</div>
 
 ###Serialize/Deserialize To/From CSV File:
 ```
