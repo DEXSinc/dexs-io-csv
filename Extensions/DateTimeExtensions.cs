@@ -238,23 +238,65 @@ namespace DEXS.IO.CSV.Extensions
             return new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second, dateTime.Millisecond, offset);
         }
 
+        public static string[] DefaultDateTimeFormatStrings =
+        {
+            "yyyy-MM-dd HH:mm:ss",
+            "dd-MMM-yyyy HH:mm:ss",
+            "dd-MMM-yyyy hh:mm:ss tt",
+            "dd-MMM-yyyy HH:mm:ss.ffffff",
+            "dd-MMM-yyyy hh:mm:ss.ffffff tt",
+            "dd-MMM-yyyy hh.mm.ss tt",
+            "dd-MMM-yyyy HH.mm.ss",
+            "dd-MMM-yyyy HH.mm.ss.ffffff",
+            "dd-MMM-yy hh.mm.ss.ffffff tt",
+            "dd-MMM-yy HH:mm:ss",
+            "dd-MMM-yy hh:mm:ss tt",
+            "dd-MMM-yy HH:mm:ss.ffffff",
+            "dd-MMM-yy hh:mm:ss.ffffff tt",
+            "dd-MMM-yy hh.mm.ss tt",
+            "dd-MMM-yy HH.mm.ss",
+            "dd-MMM-yy HH.mm.ss.ffffff",
+            "dd-MMM-yy hh.mm.ss.ffffff tt"
+        };
+
+        public static DateTime ToDateTime(this string value, string[] formats)
+        {
+            foreach (var format in formats)
+            {
+                try
+                {
+                    var tryDtr = DateTime.ParseExact(value, format, CultureInfo.InvariantCulture);
+                    return tryDtr;
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+            throw new InvalidPatternException($"Unable to parse any of the input values [input:{value}] [formats:{string.Join(",", formats)}]");
+        }
+
         public static DateTime ToDateTime(this string value, string format = null)
         {
             if (string.IsNullOrEmpty(format))
             {
                 DateTime dtr;
-                var tryDtr = DateTime.TryParse(value, out dtr);
-                return (tryDtr) ? dtr : DateTime.MinValue;
+                var tryDtr = DateTime.TryParse(value, out dtr); // Try default
+                if (!tryDtr)
+                {
+                    dtr = ToDateTime(value, DefaultDateTimeFormatStrings);
+                }
+                return dtr;
             }
-            try
-            {
+            //try
+            //{
                 var result = DateTime.ParseExact(value, format, CultureInfo.InvariantCulture);
                 return result;
-            }
+            /*}
             catch
             {
                 return DateTime.MinValue;
-            }
+            }*/
         }
     }
 }

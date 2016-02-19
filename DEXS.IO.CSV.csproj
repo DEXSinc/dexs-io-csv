@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DEXS.IO.CSV</RootNamespace>
     <AssemblyName>DEXS.IO.CSV</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -52,6 +52,7 @@
     <Compile Include="Attributes\CsvColumnAttribute.cs" />
     <Compile Include="Attributes\CsvFormatOptions.cs" />
     <Compile Include="Attributes\CsvIgnoreAttribute.cs" />
+    <Compile Include="CsvConvert.cs" />
     <Compile Include="CsvProperty.cs" />
     <Compile Include="CsvSerializer.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
@@ -70,16 +71,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-   <PropertyGroup>
-        <NugetOutputDirectory>artifacts</NugetOutputDirectory>
-    </PropertyGroup>
-
-  <Import Project="$(MSBuildProjectDirectory)\.build\MSBuild.Community.Tasks.targets"/>
+  <PropertyGroup>
+    <NugetOutputDirectory>artifacts</NugetOutputDirectory>
+  </PropertyGroup>
+  <Import Project="$(MSBuildProjectDirectory)\.build\MSBuild.Community.Tasks.targets" />
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
-	<!-- Only download a new copy of nuget.exe if we don't have a copy available -->
-	<WebDownload Condition="!Exists('nuget.exe')" Filename="nuget.exe" FileUri="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" />
-	<MakeDir Condition="!Exists($(NugetOutputDirectory))" Directories="$(NugetOutputDirectory)"/>
-	<Exec Command="nuget pack DEXS.IO.CSV.csproj -Prop Configuration=Release -OutputDirectory $(NugetOutputDirectory)" ></Exec>
+    <!-- Only download a new copy of nuget.exe if we don't have a copy available -->
+    <WebDownload Condition="!Exists('nuget.exe')" Filename="nuget.exe" FileUri="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" />
+    <MakeDir Condition="!Exists($(NugetOutputDirectory))" Directories="$(NugetOutputDirectory)" />
+    <Exec Command="nuget pack DEXS.IO.CSV.csproj -Prop Configuration=Release -OutputDirectory $(NugetOutputDirectory)">
+    </Exec>
   </Target>
-
 </Project>

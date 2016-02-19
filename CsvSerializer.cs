@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using DEXS.IO.CSV.Attributes;
 using LumenWorks.Framework.IO.Csv;
@@ -11,62 +13,11 @@ using DEXS.IO.CSV.Extensions;
 
 namespace DEXS.IO.CSV
 {
-    public class CsvConvert
-    {
-        public static string SerializeObject(object o, CsvFormatOptions options)
-        {
-            return SerializeObject(o, null, options);
-        }
-
-        public static string SerializeObject(object o, Type type, CsvFormatOptions options)
-        {
-            // var serializer = new CsvSerializer();
-            return "";
-        }
-
-        public static IEnumerable<T> DeserializeString<T>(string data) where T : class, new()
-        {
-            var serializer = new CsvSerializer<T>();
-            var stream = new StreamReader(GenerateStreamFromString(data));
-            var x = serializer.Deserialize(stream);
-            return x;
-        }
-
-        public static IEnumerable<T> DeserializeFromStream<T>(StreamReader data) where T : class, new()
-        {
-            var serializer = new CsvSerializer<T>();
-            var x = serializer.Deserialize(data);
-            return x;
-        }
-
-        public static Stream GenerateStreamFromString(string s)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
-
-        public static IEnumerable<CsvProperty> GetCSVProperties(Type type)
-        {
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance
-                                                | BindingFlags.GetProperty | BindingFlags.SetProperty);
-
-            return (from prop in properties
-                where prop.GetCustomAttribute<CsvIgnoreAttribute>() == null
-                let csvColumnAttribute = (CsvColumnAttribute)Attribute.GetCustomAttribute(prop, typeof(CsvColumnAttribute)) ?? new CsvColumnAttribute()
-                orderby csvColumnAttribute.Order, csvColumnAttribute.Name ?? prop.Name
-                select new CsvProperty(prop, csvColumnAttribute)).ToList();
-        }
-    }
-
     public class CsvSerializer<T> where T : class, new()
     {
         private readonly IEnumerable<CsvProperty> _csvProperties;
         public CsvFormatOptions FormatOptions { get; set; }
-        
+
         public CsvSerializer()
         {
             var type = typeof(T);
@@ -97,17 +48,31 @@ namespace DEXS.IO.CSV
         
         public object ConvertTo(object value, Type t, string format = null)
         {
-            if (t == typeof(DateTime)) return (value as string).ToDateTime(format);
-            if (!t.IsGenericType || t.GetGenericTypeDefinition() != typeof (Nullable<>))
-                return Convert.ChangeType(value, t);
-            var nc = new NullableConverter(t);
-            return nc.ConvertFrom(value);
+            try
+            {
+                if (t == typeof (DateTime)) return (value as string).ToDateTime(format);
+                if (!t.IsGenericType || t.GetGenericTypeDefinition() != typeof (Nullable<>))
+                    try
+                    {
+                        return Convert.ChangeType(value, t);
+                    }
+                    catch
+                    {
+                        return Activator.CreateInstance(t);
+                    }
+                var nc = new NullableConverter(t);
+                return nc.ConvertFrom(value);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error occured trying to convert {value} as {t} using format {format}", ex);
+            }
         }
 
         public IList<T> Deserialize(StreamReader stream, CsvFormatOptions formatOptions = null)
         {
             var csvFormatOptions = formatOptions ?? FormatOptions;
-            using (var csv = new CachedCsvReader(stream, true, csvFormatOptions.Separator, csvFormatOptions.QuoteChar, csvFormatOptions.EscapeChar, '#', ValueTrimmingOptions.None))
+            using (var csv = new CachedCsvReader(stream, true, csvFormatOptions.Separator, csvFormatOptions.QuoteChar, csvFormatOptions.EscapeChar, '#', ValueTrimmingOptions.UnquotedOnly))
             {
                 var items = new List<T>();
                 csv.MoveToStart();
@@ -127,10 +92,20 @@ namespace DEXS.IO.CSV
             }
         }
 
+        public string GetString(object o, string format = null)
+        {
+            if (o == null) return null;
+            var oType = o.GetType();
+            if (oType != typeof (DateTime)) return o.ToString();
+            // Else convert DateTime
+            const string defaultDateTime = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
+            return ((DateTime)o).ToString(format ?? defaultDateTime);
+        }
+
         public IEnumerable<string> GetValueItems(T item, CsvFormatOptions formatOptions = null)
         {
             var csvFormatOptions = formatOptions ?? FormatOptions;
-            var rawItems = _csvProperties.Select(cp => cp.Info.GetValue(item)?.ToString());
+            var rawItems = _csvProperties.Select(cp => GetString(cp.Info.GetValue(item), cp.Attributes.Format));
             return FormatValues(rawItems, csvFormatOptions);
         }
 

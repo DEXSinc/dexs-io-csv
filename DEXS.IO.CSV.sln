@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{9464A7
 		.build\MSBuild.Community.Tasks.targets = .build\MSBuild.Community.Tasks.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "..\UnitTests\UnitTests.csproj", "{8D1C85AD-7E5F-4ED8-8ED0-59086AA628ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{387AD474-09D4-4E52-9E2D-E3E15D5193F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{387AD474-09D4-4E52-9E2D-E3E15D5193F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{387AD474-09D4-4E52-9E2D-E3E15D5193F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D1C85AD-7E5F-4ED8-8ED0-59086AA628ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D1C85AD-7E5F-4ED8-8ED0-59086AA628ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D1C85AD-7E5F-4ED8-8ED0-59086AA628ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D1C85AD-7E5F-4ED8-8ED0-59086AA628ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
